@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>Policy Discussions</title>
+    <style>
+        :root {
+            --primary: #0EA5E9;
+            --secondary: #64748B;
+            --background: #F8FAFC;
+            --card: #FFFFFF;
+            --text: #1E293B;
+            --border: #E2E8F0;
+            --success: #10B981;
+            --hover: #0284C7;
+            --gradient: linear-gradient(135deg, #0EA5E9, #3B82F6);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--background);
+            color: var(--text);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card);
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .new-post {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: var(--card);
+            border-radius: 1rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+        }
+
+        .new-post textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            resize: vertical;
+            background: var(--background);
+        }
+
+        .new-post textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.2);
+        }
+
+        .file-upload {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .file-upload input {
+            display: none;
+        }
+
+        .file-upload label {
+            background: var(--primary);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .file-upload label:hover {
+            background: var(--hover);
+        }
+
+        .post-btn {
+            margin-top: 1rem;
+            background: var(--primary);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: background 0.3s ease;
+        }
+
+        .post-btn:hover {
+            background: var(--hover);
+        }
+
+        .posts {
+            margin: 2rem 0;
+        }
+
+        .post {
+            background: var(--card);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .post-header img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+        }
+
+        .post-header h3 {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--text);
+        }
+
+        .post-header span {
+            font-size: 0.9rem;
+            color: var(--secondary);
+        }
+
+        .post-body {
+            font-size: 1rem;
+            color: var(--text);
+            margin-bottom: 1rem;
+        }
+
+        .attachment {
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .attachment img {
+            width: 100px;
+            height: auto;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border);
+        }
+
+        .attachment a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .attachment a:hover {
+            text-decoration: underline;
+        }
+
+        .engagement {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .engagement button {
+            background: var(--background);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            color: var(--secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .engagement button:hover {
+            background: var(--hover);
+            color: white;
+        }
+
+        .comment-section {
+            margin-top: 1rem;
+        }
+
+        .comment-input {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .comment-input textarea {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            resize: vertical;
+            background: var(--background);
+        }
+
+        .comment-input button {
+            padding: 0.75rem 1rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: background 0.3s ease;
+        }
+
+        .comment-input button:hover {
+            background: var(--hover);
+        }
+
+        .comments {
+            margin-top: 1rem;
+        }
+
+        .comment {
+            background: var(--background);
+            padding: 0.75rem;
+            border-radius: 0.75rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border);
+        }
+
+        .comment span {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .comment .reply {
+            color: var(--primary);
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        .comment .reply:hover {
+            text-decoration: underline;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .main-nav {
+            background: var(--card);
+            padding: 0.75rem 2rem;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-item {
+            text-decoration: none;
+            color: var(--text);
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.75rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: var(--background);
+            color: var(--primary);
+            transform: translateY(-1px);
+        }
+
+        .nav-item::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        .nav-item:hover::after {
+            width: 100%;
+            left: 0;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+            cursor: pointer;
+        }
+
+        .engagement button.selected {
+            background: var(--primary); /* Change to your desired highlight color */
+            color: white; /* Ensure the text is visible on the new background */
+            border-color: var(--primary); /* Optional: match the border with the background */
+        }
+        
+        .engagement button.selected i {
+            color: white; /* Change the icon color to match the button */
+        }
+        
+
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="Homem.html" class="logo">PolicyVote</a>
+    </header>
+
+    <nav class="main-nav">
+        <a href="REVIEW original.html" class="nav-item">
+            <i class="fas fa-file-alt"></i>
+            Policy Review
+        </a>
+        <a href="APPLICATION original.html" class="nav-item">
+            <i class="fas fa-upload"></i>
+            Policy Submission
+        </a>
+        <a href="DISCUSSIONS original.html" class="nav-item">
+            <i class="fas fa-comments"></i>
+            Discussion Board
+        </a>
+    </nav>
+
+    <div class="container">
+        <div class="new-post">
+            <textarea id="newPostContent" rows="4" placeholder="Start a discussion..."></textarea>
+            <div class="file-upload">
+                <input type="file" id="fileUpload" accept="image/*,application/pdf" />
+                <label for="fileUpload">Upload Image or PDF</label>
+            </div>
+            <button class="post-btn" id="postButton">Post</button>
+        </div>
+
+        <div class="posts" id="posts">
+            <!-- Post 1 -->
+            <div class="post">
+                <div class="post-header">
+                    <img src="https://via.placeholder.com/50" alt="User Avatar">
+                    <div>
+                        <h3>Policy: Sustainable Urban Development (ID: 2025)</h3>
+                        <span>Posted by Citizen123 - 2 hours ago</span>
+                    </div>
+                </div>
+                <div class="post-body">
+                    Here's a fascinating PDF outlining our urban development proposal! What do you think about the water conservation plan? Let's debate!
+                </div>
+                <div class="attachment">
+                    <a href="#">Download Proposal PDF</a>
+                </div>
+                <div class="engagement">
+                    <button><i class="fas fa-thumbs-up"></i> Like (15)</button>
+                    <button><i class="fas fa-thumbs-down"></i> Dislike (2)</button>
+                </div>
+                <div class="comment-section">
+                    <div class="comments">
+                        <div class="comment">
+                            <span><strong>Citizen234:</strong> This is great, but I feel the cost estimates are too optimistic. Can we revise them?</span>
+                            <span class="reply">Reply</span>
+                        </div>
+                        <div class="comment">
+                            <span><strong>Citizen345:</strong> The conservation targets are ambitious. How are we tracking progress?</span>
+                            <span class="reply">Reply</span>
+                        </div>
+                    </div>
+                    <div class="comment-input">
+                        <textarea rows="2" placeholder="Add a comment..."></textarea>
+                        <button class="comment-btn">Add Comment</button>
+                    </div>
+                </div>
+            </div>
+            <div class="post">
+                <div class="post-header">
+                    <img src="https://via.placeholder.com/50" alt="User Avatar">
+                    <div>
+                        <h3>Policy: Universal Basic Income Pilot Program (ID: 2030)</h3>
+                        <span>Posted by Citizen987 - 1 hour ago</span>
+                    </div>
+                </div>
+                <div class="post-body">
+                    Have you seen the recent article in <a href="https://www.nytimes.com/2023/11/20/business/universal-basic-income.html" target="_blank">The New York Times</a> about the UBI pilot program's implementation in California? It raises valid concerns about inflationary pressures, but also highlights its positive impact on mental health and financial stability. 
+            
+                    Additionally, here's a fascinating research paper published by Harvard on the long-term economic effects of UBI: <a href="https://www.harvard.edu/ubi-impact-research" target="_blank">Read the Paper</a>. 
+            
+                    I'm curious to hear your thoughts—do you think UBI can be sustainably implemented at a national level without causing inflation? Let’s discuss the trade-offs!
+                </div>
+                <div class="attachment">
+                    <a href="https://www.nytimes.com/2023/11/20/business/universal-basic-income.html" target="_blank">
+                        <img src="https://via.placeholder.com/150x100" alt="NYT Article Thumbnail">
+                    </a>
+                    <a href="https://www.harvard.edu/ubi-impact-research" target="_blank">
+                        <img src="https://via.placeholder.com/150x100" alt="Research Paper Thumbnail">
+                    </a>
+                </div>
+                <div class="engagement">
+                    <button><i class="fas fa-thumbs-up"></i> Like (32)</button>
+                    <button><i class="fas fa-thumbs-down"></i> Dislike (5)</button>
+                    <button><i class="fas fa-comment"></i> Comments (15)</button>
+                </div>
+                <div class="comment-section">
+                    <div class="comments">
+                        <!-- Comment 1 -->
+                        <div class="comment">
+                            <span><strong>Citizen345:</strong> I’ve read the NYT article, and while the mental health benefits are undeniable, the inflation concern is valid. If we inject too much cash without production growth, wouldn’t prices just skyrocket?</span>
+                            <span class="reply">Reply</span>
+                        </div>
+                        <!-- Comment 2 -->
+                        <div class="comment">
+                            <span><strong>Citizen789:</strong> @Citizen345 That’s a good point, but if you check the Harvard paper, they argue that targeted UBI programs actually reduce economic inequality, leading to increased productivity. Inflationary pressures can be managed with proper fiscal controls.</span>
+                            <span class="reply">Reply</span>
+                        </div>
+                        <!-- Comment 3 -->
+                        <div class="comment">
+                            <span><strong>Citizen112:</strong> I think this policy needs more real-world testing before we scale it up. Look at Finland's UBI experiment—it improved happiness but didn’t show significant employment gains. Here’s a link to a detailed analysis: <a href="https://www.bbc.com/news/finland-ubi-experiment" target="_blank">Finland UBI Analysis</a>.</span>
+                            <span class="reply">Reply</span>
+                        </div>
+                        <!-- Comment 4 -->
+                        <div class="comment">
+                            <span><strong>Citizen567:</strong> If implemented correctly, UBI could actually save money in the long term by reducing costs for healthcare and social services. We need to stop looking at UBI as just a handout and focus on its systemic benefits.</span>
+                            <span class="reply">Reply</span>
+                        </div>
+                        <!-- Comment 5 -->
+                        <div class="comment">
+                            <span><strong>Citizen876:</strong> Here’s an interesting angle—what if we tied UBI to environmental goals? For instance, people receive additional income if they meet sustainability targets like reduced energy use. Thoughts?</span>
+                            <span class="reply">Reply</span>
+                        </div>
+                    </div>
+                    <div class="comment-input">
+                        <textarea rows="2" placeholder="Add a comment..."></textarea>
+                        <button class="comment-btn">Add Comment</button>
+                    </div>
+                </div>
+            </div>            
+        </div>
+    </div>
+
+    <script>
+        const postButton = document.getElementById('postButton');
+        const postsContainer = document.getElementById('posts');
+
+        postButton.addEventListener('click', () => {
+            const newPostContent = document.getElementById('newPostContent').value.trim();
+            const fileUpload = document.getElementById('fileUpload');
+
+            if (!newPostContent) {
+                alert('Please enter content for your post.');
+                return;
+            }
+
+            const postElement = document.createElement('div');
+            postElement.classList.add('post');
+            postElement.innerHTML = `
+                <div class="post-header">
+                    <img src="https://via.placeholder.com/50" alt="User Avatar">
+                    <div>
+                        <h3>Policy: Custom Policy Title (ID: XXXX)</h3>
+                        <span>Posted by You - Just now</span>
+                    </div>
+                </div>
+                <div class="post-body">${newPostContent}</div>
+                ${fileUpload.files[0] ? `<div class="attachment"><a href="#">${fileUpload.files[0].name}</a></div>` : ''}
+                <div class="engagement">
+                    <button><i class="fas fa-thumbs-up"></i> Like</button>
+                    <button><i class="fas fa-thumbs-down"></i> Dislike</button>
+                </div>
+                <div class="comment-section">
+                    <div class="comments"></div>
+                    <div class="comment-input">
+                        <textarea rows="2" placeholder="Add a comment..."></textarea>
+                        <button class="comment-btn">Add Comment</button>
+                    </div>
+                </div>
+            `;
+
+            postsContainer.prepend(postElement);
+            document.getElementById('newPostContent').value = '';
+            fileUpload.value = '';
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Add event listener to the whole document to handle dynamically added elements
+            document.addEventListener('click', function (event) {
+                if (event.target.classList.contains('comment-btn')) {
+                    const button = event.target; // The button that was clicked
+                    const commentInput = button.previousElementSibling; // The textarea immediately preceding the button
+                    const commentsContainer = button.closest('.comment-section').querySelector('.comments');
+        
+                    if (commentInput.value.trim() === '') {
+                        alert('Please write something before posting your comment.');
+                        return;
+                    }
+        
+                    // Create the comment element
+                    const newComment = document.createElement('div');
+                    newComment.className = 'comment';
+                    newComment.innerHTML = `
+                        <span><strong>You:</strong> ${commentInput.value}</span>
+                        <span class="reply">Reply</span> <!-- Optional: Add reply functionality later -->
+                    `;
+        
+                    // Append the new comment to the comments container
+                    commentsContainer.appendChild(newComment);
+        
+                    // Clear the input after posting
+                    commentInput.value = '';
+                }
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Handle Like and Dislike button clicks
+            document.addEventListener('click', function (event) {
+                const button = event.target.closest('button'); // Ensure the click is on a button
+                if (button && button.querySelector('.fa-thumbs-up')) {
+                    toggleEngagement(button, 'like');
+                } else if (button && button.querySelector('.fa-thumbs-down')) {
+                    toggleEngagement(button, 'dislike');
+                }
+            });
+        
+            // Function to toggle engagement (like or dislike)
+            function toggleEngagement(button, type) {
+                const parentEngagement = button.parentElement; // Parent container of like/dislike buttons
+                const likeButton = parentEngagement.querySelector('.fa-thumbs-up').parentElement;
+                const dislikeButton = parentEngagement.querySelector('.fa-thumbs-down').parentElement;
+        
+                // Reset the other button if already selected
+                if (type === 'like' && dislikeButton.classList.contains('selected')) {
+                    resetButton(dislikeButton);
+                } else if (type === 'dislike' && likeButton.classList.contains('selected')) {
+                    resetButton(likeButton);
+                }
+        
+                // Toggle the current button
+                if (button.classList.contains('selected')) {
+                    resetButton(button); // If already selected, reset it
+                } else {
+                    incrementCount(button); // Otherwise, increment count and mark as selected
+                }
+            }
+        
+            // Increment count and mark button as selected
+            function incrementCount(button) {
+                const currentText = button.textContent.trim();
+                const match = currentText.match(/\d+/); // Extract the number
+                let count = match ? parseInt(match[0]) : 0; // Default to 0 if no number
+                count += 1; // Increment by 1
+                button.innerHTML = `<i class="${button.querySelector('i').className}"></i> ${button.textContent.split(' ')[0]} (${count})`;
+                button.classList.add('selected'); // Mark as selected
+            }
+        
+            // Reset button state and count
+            function resetButton(button) {
+                const currentText = button.textContent.trim();
+                const match = currentText.match(/\d+/); // Extract the number
+                let count = match ? parseInt(match[0]) : 0; // Default to 0 if no number
+                count = Math.max(0, count - 1); // Decrement by 1, ensuring no negative values
+                button.innerHTML = `<i class="${button.querySelector('i').className}"></i> ${button.textContent.split(' ')[0]} (${count})`;
+                button.classList.remove('selected'); // Remove selected class
+            }
+        });
+          
+    </script>
+        
+
+    
+</body>
+</html>

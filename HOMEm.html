@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Modern Policy-Based Democracy Portal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0EA5E9;
+            --primary-dark: #0284C7;
+            --secondary: #64748B;
+            --accent: #8B5CF6;
+            --background: #F8FAFC;
+            --card: #FFFFFF;
+            --text: #1E293B;
+            --border: #E2E8F0;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --gradient: linear-gradient(135deg, #0EA5E9, #6366F1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.5;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 2rem;
+            background: var(--card);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+            cursor: pointer;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .main-nav {
+            background: var(--card);
+            padding: 0.75rem 2rem;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-item {
+            text-decoration: none;
+            color: var(--text);
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.75rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: var(--background);
+            color: var(--primary);
+            transform: translateY(-1px);
+        }
+
+        .nav-item::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        .nav-item:hover::after {
+            width: 100%;
+            left: 0;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 300px 1fr 300px 300px;
+            gap: 2rem;
+            padding: 2rem;
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--card);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.05);
+        }
+
+        .policy-card {
+            margin-bottom: 1rem;
+            padding: 1.5rem;
+            background: var(--card);
+            border-radius: 1rem;
+            border: 1px solid var(--border);
+            cursor: pointer;
+        }
+
+        .policy-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
+        }
+
+        .policy-stats {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--secondary);
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            margin-top: 1rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient);
+            border-radius: 3px;
+            width: 60%;
+            transition: width 1s ease;
+        }
+
+        .button {
+            background: var(--gradient);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(14, 165, 233, 0.2);
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            background: rgba(14, 165, 233, 0.1);
+            color: var(--primary);
+            margin-top: 0.5rem;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .activity-icon {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            background: rgba(14, 165, 233, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+
+        .review-history-item {
+            padding: 1rem;
+            border-radius: 0.75rem;
+            background: var(--background);
+            margin-bottom: 0.75rem;
+        }
+
+        .review-history-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .review-date {
+            font-size: 0.875rem;
+            color: var(--secondary);
+            margin-top: 0.25rem;
+        }
+
+        .review-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+        }
+
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="Homem.html" class="logo">PolicyVote</a>
+        <div class="nav-right">
+            <div class="status-badge">
+                <i class="fas fa-user-check"></i>
+                <span style="margin-left: 0.5rem">Citizen ID: 2023095</span>
+            </div>
+        </div>
+    </header>
+    
+    <nav class="main-nav">
+        <a href="REVIEW original.html" class="nav-item">
+            <i class="fas fa-file-alt"></i>
+            Policy Review
+        </a>
+        <a href="APPLICATION original.html" class="nav-item">
+            <i class="fas fa-upload"></i>
+            Policy Submission
+        </a>
+        <a href="DISCUSSIONS original.html" class="nav-item">
+            <i class="fas fa-comments"></i>
+            Discussion Board
+        </a>
+    </nav>
+    
+
+    <div class="container">
+        <div class="card">
+            <h3>Quarterly Progress</h3>
+            <div style="margin-top: 1.5rem;">
+                <div class="status-badge">15 Days Remaining</div>
+                <div class="progress-bar" style="margin-top: 1.5rem">
+                    <div class="progress-fill"></div>
+                </div>
+                <div style="margin-top: 2rem">
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 500">Reviews Complete</div>
+                            <div style="color: var(--secondary)">3 of 5 required</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 500">Discussion Posts</div>
+                            <div style="color: var(--secondary)">7 contributions</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h2>Active Proposals</h2>
+                <button class="button">
+                    <i class="fas fa-plus"></i>
+                    New Proposal
+                </button>
+            </div>
+            <div class="policy-card">
+                <div style="display: flex; justify-content: space-between; align-items: start;">
+                    <div>
+                        <span class="status-badge">Environmental</span>
+                        <h3 style="margin-top: 0.75rem">Sustainable Urban Development 2025</h3>
+                        <p style="color: var(--secondary); margin-top: 0.5rem">Comprehensive water conservation and urban planning initiative</p>
+                    </div>
+                    <i class="fas fa-chevron-right" style="color: var(--secondary)"></i>
+                </div>
+                <div class="policy-stats">
+                    <div class="stat-item">
+                        <i class="fas fa-clock"></i>
+                        5 days left
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-users"></i>
+                        1,234 reviews
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-comment-dots"></i>
+                        328 discussions
+                    </div>
+                </div>
+            </div>
+            <div class="policy-card">
+                <div style="display: flex; justify-content: space-between; align-items: start;">
+                    <div>
+                        <span class="status-badge" style="background: rgba(139, 92, 246, 0.1); color: var(--accent);">Economic</span>
+                        <h3 style="margin-top: 0.75rem">Economic Framework Revision</h3>
+                        <p style="color: var(--secondary); margin-top: 0.5rem">Updates to Distributist-Keynesian mechanisms</p>
+                    </div>
+                    <i class="fas fa-chevron-right" style="color: var(--secondary)"></i>
+                </div>
+                <div class="policy-stats">
+                    <div class="stat-item">
+                        <i class="fas fa-clock"></i>
+                        7 days left
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-users"></i>
+                        892 reviews
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-comment-dots"></i>
+                        156 discussions
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Expert Panel Status</h3>
+            <div style="margin-top: 1.5rem">
+                <div class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas fa-sync"></i>
+                    </div>
+                    <div>
+                        <div style="font-weight: 500">Next Rotation</div>
+                        <div style="color: var(--secondary)">45 days remaining</div>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas fa-focus"></i>
+                    </div>
+                    <div>
+                        <div style="font-weight: 500">Current Focus</div>
+                        <div style="color: var(--secondary)">Environmental & Economic</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>My Review History</h3>
+            <div style="margin-top: 1.5rem">
+                <div class="review-history-item">
+                    <h4>Green Energy Implementation Plan</h4>
+                    <div class="review-date">Reviewed Dec 8, 2024</div>
+                    <div class="review-status">
+                        <span class="status-dot"></span>
+                        Approved with comments
+                    </div>
+                </div>
+                <div class="review-history-item">
+                    <h4>Public Transportation Extension</h4>
+                    <div class="review-date">Reviewed Dec 5, 2024</div>
+                    <div class="review-status">
+                        <span class="status-dot"></span>
+                        Approved
+                    </div>
+                </div>
+                <div class="review-history-item">
+                    <h4>Housing Affordability Act</h4>
+                    <div class="review-date">Reviewed Dec 1, 2024</div>
+                    <div class="review-status">
+                        <span class="status-dot" style="background: var(--warning)"></span>
+                        Requires revision
+                    </div>
+                </div>
+            </div>
+            <a href="HISTORY original.html" style="text-decoration: none; color: inherit;">
+                <button class="button" style="width: 100%; margin-top: 1rem;">
+                    <i class="fas fa-history"></i>
+                    View Full History
+                </button>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Smooth interactions for policy cards
+        document.querySelectorAll('.policy-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                const chevron = card.querySelector('.fa-chevron-right');
+                if (chevron) {
+                    chevron.style.transform = 'translateX(4px)';
+                    chevron.style.color = 'var(--primary)';
+                }
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                const chevron = card.querySelector('.fa-chevron-right');
+                if (chevron) {
+                    chevron.style.transform = 'translateX(0)';
+                    chevron.style.color = 'var(--secondary)';
+                }
+            });
+        });
+
+        // Animate progress bar on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const progressBars = document.querySelectorAll('.progress-fill');
+            progressBars.forEach(bar => {
+                bar.style.width = '60%';
+            });
+        });
+
+        // Add hover effect for review history items
+        document.querySelectorAll('.review-history-item').forEach(item => {
+            item.addEventListener('mouseenter', () => {
+                item.style.background = 'var(--card)';
+            });
+            
+            item.addEventListener('mouseleave', () => {
+                item.style.background = 'var(--background)';
+            });
+        });
+    </script>
+</body>
+</html>

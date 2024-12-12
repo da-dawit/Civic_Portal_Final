@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <title>Policy Submission</title>
+    <style>
+        :root {
+            --primary: #0EA5E9;
+            --secondary: #64748B;
+            --background: #F8FAFC;
+            --card: #FFFFFF;
+            --text: #1E293B;
+            --border: #E2E8F0;
+            --success: #10B981;
+            --hover: #0284C7;
+            --gradient: linear-gradient(135deg, #0EA5E9, #3B82F6);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card);
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .button {
+            background: var(--primary);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: background 0.3s ease;
+        }
+
+        .button:hover {
+            background: var(--hover);
+        }
+
+        .policy-sheet {
+            display: none;
+            background: var(--card);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-top: 2rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--secondary);
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            background: var(--background);
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.2);
+        }
+
+        .form-group input[type="file"] {
+            padding: 0.5rem;
+            border: 1px dashed var(--border);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .checkbox-group input {
+            width: auto;
+        }
+
+        .submit-section {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .confirmation {
+            display: none;
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .confirmation h2 {
+            color: var(--success);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .start-over {
+            display: inline-block;
+            margin-top: 1rem;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .start-over:hover {
+            text-decoration: underline;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .main-nav {
+            background: var(--card);
+            padding: 0.75rem 2rem;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-item {
+            text-decoration: none;
+            color: var(--text);
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.75rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: var(--background);
+            color: var(--primary);
+            transform: translateY(-1px);
+        }
+
+        .nav-item::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        .nav-item:hover::after {
+            width: 100%;
+            left: 0;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="Homem.html" class="logo">PolicyVote</a>
+    </header>
+
+    <nav class="main-nav">
+        <a href="REVIEW original.html" class="nav-item">
+            <i class="fas fa-file-alt"></i>
+            Policy Review
+        </a>
+        <a href="APPLICATION original.html" class="nav-item">
+            <i class="fas fa-upload"></i>
+            Policy Submission
+        </a>
+        <a href="DISCUSSIONS original.html" class="nav-item">
+            <i class="fas fa-comments"></i>
+            Discussion Board
+        </a>
+    </nav>
+
+    <div class="container">
+        <button class="button" id="startProposal">Start My Policy Proposal</button>
+
+        <div class="policy-sheet" id="policySheet">
+            <form id="policyForm">
+                <div class="form-group">
+                    <label for="policyDomain">Policy Domain</label>
+                    <select id="policyDomain" required>
+                        <option value="">Select a Domain</option>
+                        <option value="Environmental Protection">Environmental Protection</option>
+                        <option value="Economic Development">Economic Development</option>
+                        <option value="Social Welfare">Social Welfare</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="termLength">Term Length</label>
+                    <select id="termLength" required>
+                        <option value="">Select Term Length</option>
+                        <option value="1 year">1 year</option>
+                        <option value="2 years">2 years</option>
+                        <option value="5 years">5 years</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="summary">Executive Summary</label>
+                    <textarea id="summary" rows="4" placeholder="Provide a clear, concise overview of the policy proposal..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="measurableObjectives">Measurable Objectives</label>
+                    <textarea id="measurableObjectives" rows="4" placeholder="Define specific, measurable outcomes..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="implementationStrategy">Implementation Strategy</label>
+                    <textarea id="implementationStrategy" rows="6" placeholder="Describe the strategy in phases..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="riskAssessment">Risk Assessment</label>
+                    <textarea id="riskAssessment" rows="4" placeholder="List major risks and mitigation strategies..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="impactAnalysis">Impact Analysis</label>
+                    <textarea id="impactAnalysis" rows="4" placeholder="Detail economic, social, and environmental impacts..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="successMetrics">Success Metrics</label>
+                    <textarea id="successMetrics" rows="4" placeholder="Define specific, measurable indicators of policy success..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="pdfUpload">Upload Poster (PDF)</label>
+                    <input type="file" id="pdfUpload" accept="application/pdf" required>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="confirmation" required>
+                    <label for="confirmation">I confirm all information is accurate and agree to the terms.</label>
+                </div>
+
+                <div class="submit-section">
+                    <button type="button" class="button" id="submitPolicy">Submit Policy Proposal</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="confirmation" id="confirmationMessage">
+            <h2>Congratulations! Your policy proposal has been submitted.</h2>
+            <a href="#" class="start-over" id="startOver">Start a New Policy Proposal</a>
+        </div>
+    </div>
+
+    <script>
+        const startProposalButton = document.getElementById('startProposal');
+        const policySheet = document.getElementById('policySheet');
+        const submitPolicyButton = document.getElementById('submitPolicy');
+        const confirmationMessage = document.getElementById('confirmationMessage');
+        const startOverLink = document.getElementById('startOver');
+        const form = document.getElementById('policyForm');
+
+        // Show policy submission form
+        startProposalButton.addEventListener('click', () => {
+            startProposalButton.style.display = 'none';
+            policySheet.style.display = 'block';
+        });
+
+        // Handle policy submission
+        submitPolicyButton.addEventListener('click', () => {
+            if (form.checkValidity()) {
+                policySheet.style.display = 'none';
+                confirmationMessage.style.display = 'block';
+            } else {
+                alert('Please complete all required fields before submitting.');
+            }
+        });
+
+        // Restart the process
+        startOverLink.addEventListener('click', (event) => {
+            event.preventDefault();
+            confirmationMessage.style.display = 'none';
+            startProposalButton.style.display = 'block';
+            form.reset();
+        });
+    </script>
+</body>
+</html>
+

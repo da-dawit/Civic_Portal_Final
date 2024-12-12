@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>PolicyVote</title>
+    <style>
+        :root {
+            --primary: #0EA5E9;
+            --secondary: #64748B;
+            --background: #F8FAFC;
+            --card: #FFFFFF;
+            --text: #1E293B;
+            --border: #E2E8F0;
+            --success: #10B981;
+            --danger: #EF4444;
+            --hover: #0284C7;
+            --gradient: linear-gradient(135deg, #0EA5E9, #3B82F6);
+            --input-bg: #F1F5F9;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card);
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .section {
+            margin-top: 2rem;
+        }
+
+        .section h2 {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .status {
+            font-weight: bold;
+            margin-top: 1rem;
+        }
+
+        .status.rejected {
+            color: var(--danger);
+        }
+
+        .status.accepted-not-picked {
+            color: var(--secondary);
+        }
+
+        .status.accepted-picked {
+            color: var(--success);
+        }
+
+        .actions {
+            margin-top: 1rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .button {
+            background: var(--primary);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: background 0.2s ease;
+        }
+
+        .button:hover {
+            background: var(--hover);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: var(--card);
+            padding: 2rem;
+            border-radius: 1rem;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .edit-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            background: var(--card);
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.8rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .form-group select,
+        .form-group textarea,
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 1rem;
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-group select:focus,
+        .form-group textarea:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .main-nav {
+            background: var(--card);
+            padding: 0.75rem 2rem;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-item {
+            text-decoration: none;
+            color: var(--text);
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.75rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: var(--background);
+            color: var(--primary);
+            transform: translateY(-1px);
+        }
+
+        .nav-item::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        .nav-item:hover::after {
+            width: 100%;
+            left: 0;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+            cursor: pointer;
+        }
+        
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <a href="Homem.html" class="logo">PolicyVote</a>
+    </header>
+
+    <nav class="main-nav">
+        <a href="REVIEW original.html" class="nav-item">
+            <i class="fas fa-file-alt"></i>
+            Policy Review
+        </a>
+        <a href="APPLICATION original.html" class="nav-item">
+            <i class="fas fa-upload"></i>
+            Policy Submission
+        </a>
+        <a href="DISCUSSIONS original.html" class="nav-item">
+            <i class="fas fa-comments"></i>
+            Discussion Board
+        </a>
+    </nav>
+    
+
+    <div class="container">
+        <!-- Votes Section -->
+        <div class="section">
+            <h2>Your Votes</h2>
+            <div class="card">
+                <h3>Policy: Renewable Energy Expansion (ID: 2001)</h3>
+                <p>Your Vote: Yes</p>
+                <p>Comment: "I support this policy for its potential long-term environmental benefits."</p>
+                <div class="actions">
+                    <button class="button" onclick="viewVote(2001)">View</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Applications Section -->
+        <div class="section">
+            <h2>Your Policy Proposals</h2>
+            <div class="card">
+                <h3>Policy: Universal Healthcare Reform (ID: 3002)</h3>
+                <p>Submitted: 2024-01-15</p>
+                <p>Status: <span class="status accepted-picked">Accepted and Picked</span></p>
+                <div class="actions">
+                    <button class="button" onclick="viewApplication(3002)">View</button>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Policy: Green Infrastructure Plan (ID: 3003)</h3>
+                <p>Submitted: 2024-02-10</p>
+                <p>Status: <span class="status accepted-not-picked">Accepted but Not Picked</span></p>
+                <div class="actions">
+                    <button class="button" onclick="viewApplication(3003)">View</button>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Policy: Digital Education Initiative (ID: 3004)</h3>
+                <p>Submitted: 2024-03-01</p>
+                <p>Status: <span class="status rejected">Rejected</span></p>
+                <div class="actions">
+                    <button class="button" onclick="viewApplication(3004)">View</button>
+                    <button class="button" onclick="editApplication(3004)">Edit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="viewModal" class="modal">
+        <div class="modal-content">
+            <button class="close-button" onclick="closeModal()">&times;</button>
+            <h2 id="modalTitle">Details</h2>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <button class="close-button" onclick="closeEditModal()">&times;</button>
+            <div class="edit-container">
+                <h1>Edit Policy</h1>
+                <form id="editPolicyForm">
+                    <div class="form-group">
+                        <label for="domain">Policy Domain</label>
+                        <select id="domain" name="domain" required>
+                            <option value="">Select a Domain</option>
+                            <option value="environmental">Environmental</option>
+                            <option value="economic">Economic</option>
+                            <option value="social">Social</option>
+                            <option value="infrastructure">Infrastructure</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="termLength">Term Length</label>
+                        <select id="termLength" name="termLength" required>
+                            <option value="">Select Term Length</option>
+                            <option value="2 year">1 Year</option>
+                            <option value="4 years">2 Years</option>
+                            <option value="6 years">3 Years</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="summary">Executive Summary</label>
+                        <textarea id="summary" name="summary" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="objectives">Measurable Objectives</label>
+                        <textarea id="objectives" name="objectives" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="strategy">Implementation Strategy</label>
+                        <textarea id="strategy" name="strategy" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="risks">Risk Assessment</label>
+                        <textarea id="risks" name="risks" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="impact">Impact Analysis</label>
+                        <textarea id="impact" name="impact" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="metrics">Success Metrics</label>
+                        <textarea id="metrics" name="metrics" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="poster">Upload Poster (PDF)</label>
+                        <input type="file" id="poster" name="poster" accept=".pdf" required>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="button" class="button cancel" onclick="closeEditModal()">Cancel</button>
+                        <button type="submit" class="button">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const viewModal = document.getElementById('viewModal');
+        const editModal = document.getElementById('editModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalBody = document.getElementById('modalBody');
+
+        function viewVote(voteId) {
+            modalTitle.innerText = `Vote Details (ID: ${voteId})`;
+            modalBody.innerHTML = `
+                <p><strong>Policy:</strong> Renewable Energy Expansion</p>
+                <p><strong>Vote:</strong> Yes</p>
+                <p><strong>Comment:</strong> "I support this policy for its potential long-term environmental benefits."</p>
+            `;
+            viewModal.style.display = 'flex';
+        }
+
+        function viewApplication(appId) {
+            let applicationDetails = {
+                3002: {
+                    policy: "Universal Healthcare Reform",
+                    status: "Accepted and Picked",
+                    metrics: `
+                        <ul>
+                            <li>Total Votes: 1500 Yes / 300 No</li>
+                            <li>Engagement: 1800 votes</li>
+                            <li>Ratings:</li>
+                            <ul>
+                                <li>Feasibility: 4.5</li>
+                                <li>Economic: 4.3</li>
+                                <li>Social: 4.7</li>
+                                <li>Environmental: 4.1</li>
+                            </ul>
+                        </ul>
+                    `,
+                },
+                3003: {
+                    policy: "Green Infrastructure Plan",
+                    status: "Accepted but Not Picked",
+                    metrics: `
+                        <ul>
+                            <li>Total Votes: 1100 Yes / 500 No</li>
+                            <li>Engagement: 1600 votes</li>
+                            <li>Ratings:</li>
+                            <ul>
+                                <li>Feasibility: 4.2</li>
+                                <li>Economic: 4.0</li>
+                                <li>Social: 4.1</li>
+                                <li>Environmental: 4.5</li>
+                            </ul>
+                        </ul>
+                    `,
+                },
+                3004: {
+                    policy: "Digital Education Initiative",
+                    status: "Rejected",
+                    metrics: `
+                        <ul>
+                            <li>Total Votes: 500 Yes / 1200 No</li>
+                            <li>Engagement: 1700 votes</li>
+                            <li>Ratings:</li>
+                            <ul>
+                                <li>Feasibility: 3.0</li>
+                                <li>Economic: 3.5</li>
+                                <li>Social: 3.2</li>
+                                <li>Environmental: 2.8</li>
+                            </ul>
+                        </ul>
+                    `,
+                },
+            };
+        
+            let application = applicationDetails[appId];
+            if (!application) {
+                alert("Application not found!");
+                return;
+            }
+        
+            modalTitle.innerText = `Application Details (ID: ${appId})`;
+            modalBody.innerHTML = `
+                <p><strong>Policy:</strong> ${application.policy}</p>
+                <p><strong>Status:</strong> ${application.status}</p>
+                <p><strong>Metrics:</strong></p>
+                ${application.metrics}
+            `;
+            viewModal.style.display = 'flex';
+        }
+        
+        function editApplication(appId) {
+            editModal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            viewModal.style.display = 'none';
+        }
+
+        function closeEditModal() {
+            editModal.style.display = 'none';
+        }
+    </script>
+</body>
+</html>

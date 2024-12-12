@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PolicyVote - Review Portal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #0EA5E9;
+            --primary-dark: #0284C7;
+            --secondary: #64748B;
+            --accent: #8B5CF6;
+            --background: #F8FAFC;
+            --card: #FFFFFF;
+            --text: #1E293B;
+            --border: #E2E8F0;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --gradient: linear-gradient(135deg, #0EA5E9, #6366F1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.5;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 2rem;
+            background: var(--card);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .policy-card {
+            background: var(--card);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .policy-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
+        }
+
+        .domain-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            background: rgba(14, 165, 233, 0.1);
+            color: var(--primary);
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        .stats {
+            display: flex;
+            gap: 2rem;
+            margin-top: 1rem;
+            color: var(--secondary);
+        }
+
+        .button {
+            background: var(--gradient);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background: var(--card);
+            width: 90%;
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            border-radius: 1rem;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+            position: relative;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--secondary);
+        }
+
+        /* Step Indicators */
+        .steps {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--secondary);
+            font-weight: 500;
+        }
+
+        .step.active {
+            color: var(--primary);
+        }
+
+        .step-number {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--background);
+            border: 2px solid currentColor;
+        }
+
+        .step.active .step-number {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Document Preview */
+        .document-preview {
+            background: var(--background);
+            border-radius: 1rem;
+            padding: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .preview-image {
+            width: 100%;
+            height: auto;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .form-group textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 1rem;
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            resize: vertical;
+            transition: all 0.3s ease;
+        }
+
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        }
+
+        .word-count {
+            text-align: right;
+            color: var(--secondary);
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        .step-content {
+            display: none;
+        }
+
+        .step-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .rating-group {
+            display: flex;
+            gap: 0.5rem;
+            margin: 0.5rem 0 1rem 0;
+        }
+        
+        .rating-btn {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            background: var(--card);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .rating-btn:hover {
+            background: rgba(14, 165, 233, 0.1);
+            border-color: var(--primary);
+        }
+        
+        .rating-btn.selected {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .recommendation-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            background: var(--card);
+            cursor: pointer;
+        }
+        
+        .recommendation-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        }
+        
+        .form-group h3 {
+            margin-bottom: 1rem;
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .recommendation-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+        
+        .recommendation-btn {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid var(--border);
+            border-radius: 0.75rem;
+            background: var(--card);
+            color: var(--text);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .recommendation-btn:hover {
+            border-color: var(--primary);
+            background: rgba(14, 165, 233, 0.1);
+        }
+        
+        .recommendation-btn.selected {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+        
+        .recommendation-btn i {
+            font-size: 1.25rem;
+        }
+
+        .trend-button {
+            background: var(--secondary);
+        }
+        
+        .trends-grid {
+            display: grid;
+            gap: 2rem;
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .trend-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            grid-column: 1 / -1;
+        }
+        
+        .stat-card {
+            background: var(--background);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            color: var(--secondary);
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+        
+        .vote-bar {
+            height: 2.5rem;
+            background: var(--background);
+            border-radius: 1.25rem;
+            display: flex;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+        
+        .vote-segment {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 500;
+        }
+        
+        .vote-segment.accept {
+            background: var(--success);
+        }
+        
+        .vote-segment.reject {
+            background: var(--warning);
+        }
+        
+        .rating-item {
+            display: grid;
+            grid-template-columns: 2fr 3fr 1fr;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .rating-bar {
+            height: 0.5rem;
+            background: var(--background);
+            border-radius: 0.25rem;
+            overflow: hidden;
+        }
+        
+        .rating-fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 0.25rem;
+        }
+        
+        .timeline-items {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .timeline-item {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .timeline-icon {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        .timeline-icon.accept {
+            background: var(--success);
+        }
+        
+        .timeline-icon.reject {
+            background: var(--warning);
+        }
+        
+        .timeline-header {
+            font-weight: 500;
+        }
+        
+        .timeline-time {
+            font-size: 0.875rem;
+            color: var(--secondary);
+        }
+
+        .modal-content {
+            width: 90%;
+            max-width: 800px;
+            padding: 2rem;
+            border-radius: 1rem;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .main-nav {
+            background: var(--card);
+            padding: 0.75rem 2rem;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-item {
+            text-decoration: none;
+            color: var(--text);
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.75rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: var(--background);
+            color: var(--primary);
+            transform: translateY(-1px);
+        }
+
+        .nav-item::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        .nav-item:hover::after {
+            width: 100%;
+            left: 0;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+            cursor: pointer;
+        }
+
+        .chart-canvas {
+            width: 100%; /* Keeps the width responsive to the container size */
+            height: 300px; /* Reduced height for a smaller chart display */
+        }
+
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="Homem.html" class="logo">PolicyVote</a>
+        <div class="nav-right">
+            <div class="status-badge">
+                <i class="fas fa-user-check"></i>
+                <span style="margin-left: 0.5rem">Citizen ID: 2023095</span>
+            </div>
+        </div>
+    </header>
+
+    <nav class="main-nav">
+        <a href="REVIEW original.html" class="nav-item">
+            <i class="fas fa-file-alt"></i>
+            Policy Review
+        </a>
+        <a href="APPLICATION original.html" class="nav-item">
+            <i class="fas fa-upload"></i>
+            Policy Submission
+        </a>
+        <a href="DISCUSSIONS original.html" class="nav-item">
+            <i class="fas fa-comments"></i>
+            Discussion Board
+        </a>
+    </nav>
+
+    <div class="container">
+        <h1 style="margin-bottom: 2rem">Policy Review</h1>
+        
+        <!-- Environmental Policy Card -->
+        <div class="policy-card">
+            <div class="domain-badge">Environmental</div>
+            <h2 style="margin: 1rem 0">Sustainable Urban Development 2025</h2>
+            <p style="color: var(--secondary)">Comprehensive water conservation and urban planning initiative</p>
+            <div class="stats">
+                <span><i class="fas fa-clock"></i> 5 days left</span>
+                <span><i class="fas fa-users"></i> 1,234 reviews</span>
+                <span><i class="fas fa-comments"></i> 328 discussions</span>
+            </div>
+            <button class="button" style="margin-top: 1rem" onclick="openReviewModal('environmental')">
+                <i class="fas fa-pen"></i>
+                Review Policy
+            </button>
+            <!-- Trend chart container -->
+            <canvas id="trendChart-environmental" class="chart-canvas"></canvas>
+
+        </div>
+
+        <!-- Economic Policy Card -->
+        <div class="policy-card">
+            <div class="domain-badge" style="background: rgba(139, 92, 246, 0.1); color: var(--accent);">Economic</div>
+            <h2 style="margin: 1rem 0">Economic Framework Revision</h2>
+            <p style="color: var(--secondary)">Updates to Distributist-Keynesian mechanisms</p>
+            <div class="stats">
+                <span><i class="fas fa-clock"></i> 7 days left</span>
+                <span><i class="fas fa-users"></i> 892 reviews</span>
+                <span><i class="fas fa-comments"></i> 156 discussions</span>
+            </div>
+            <button class="button" style="margin-top: 1rem" onclick="openReviewModal('economic')">
+                <i class="fas fa-pen"></i>
+                Review Policy
+            </button>
+
+            <canvas id="trendChart-economic" class="chart-canvas"></canvas>
+        </div>
+
+        <!-- Infrastructure Policy -->
+        <div class="policy-card">
+            <div class="domain-badge" style="background: rgba(234, 88, 12, 0.1); color: #EA580C;">Infrastructure</div>
+            <h2 style="margin: 1rem 0">Public Transportation Modernization Plan</h2>
+            <p style="color: var(--secondary)">Metropolitan transit system upgrade focusing on accessibility and environmental impact</p>
+            <div class="stats">
+                <span><i class="fas fa-clock"></i> 12 days left</span>
+                <span><i class="fas fa-users"></i> 756 reviews</span>
+                <span><i class="fas fa-comments"></i> 243 discussions</span>
+            </div>
+            <button class="button" style="margin-top: 1rem" onclick="openReviewModal('infrastructure')">
+                <i class="fas fa-pen"></i>
+                Review Policy
+            </button>
+            <canvas id="trendChart-infrastructure" class="chart-canvas"></canvas>
+
+        </div>
+
+        <!-- Social Services Policy -->
+        <div class="policy-card">
+            <div class="domain-badge" style="background: rgba(236, 72, 153, 0.1); color: #EC4899;">Social Services</div>
+            <h2 style="margin: 1rem 0">Universal Healthcare Access Initiative</h2>
+            <p style="color: var(--secondary)">Healthcare system reform with emphasis on preventive care and equal access</p>
+            <div class="stats">
+                <span><i class="fas fa-clock"></i> 8 days left</span>
+                <span><i class="fas fa-users"></i> 1,567 reviews</span>
+                <span><i class="fas fa-comments"></i> 482 discussions</span>
+            </div>
+            <button class="button" style="margin-top: 1rem" onclick="openReviewModal('social')">
+                <i class="fas fa-pen"></i>
+                Review Policy
+            </button>
+            <canvas id="trendChart-social" class="chart-canvas"></canvas>
+
+        </div>
+
+        <!-- Technology & Environmental Policy -->
+        <div class="policy-card">
+            <div class="domain-badge" style="background: rgba(16, 185, 129, 0.1); color: #10B981;">Tech/Environmental</div>
+            <h2 style="margin: 1rem 0">Smart Grid Integration Project</h2>
+            <p style="color: var(--secondary)">Renewable energy infrastructure with AI-powered distribution systems</p>
+            <div class="stats">
+                <span><i class="fas fa-clock"></i> 15 days left</span>
+                <span><i class="fas fa-users"></i> 943 reviews</span>
+                <span><i class="fas fa-comments"></i> 287 discussions</span>
+            </div>
+            <button class="button" style="margin-top: 1rem" onclick="openReviewModal('tech-environmental')">
+                <i class="fas fa-pen"></i>
+                Review Policy
+            </button>
+            <canvas id="trendChart-tech" class="chart-canvas"></canvas>
+
+        </div>
+
+        <!-- Education Policy -->
+        <div class="policy-card">
+            <div class="domain-badge" style="background: rgba(79, 70, 229, 0.1); color: #4F46E5;">Education</div>
+            <h2 style="margin: 1rem 0">Digital Education Framework</h2>
+            <p style="color: var(--secondary)">Comprehensive reform of educational system incorporating hybrid learning models</p>
+            <div class="stats">
+                <span><i class="fas fa-clock"></i> 9 days left</span>
+                <span><i class="fas fa-users"></i> 834 reviews</span>
+                <span><i class="fas fa-comments"></i> 391 discussions</span>
+            </div>
+            <button class="button" style="margin-top: 1rem" onclick="openReviewModal('education')">
+                <i class="fas fa-pen"></i>
+                Review Policy
+            </button>
+            <canvas id="trendChart-education" class="chart-canvas"></canvas>
+
+        </div>
+
+        <!-- Economic & Social Policy -->
+        <div class="policy-card">
+            <div class="domain-badge" style="background: rgba(124, 58, 237, 0.1); color: #7C3AED;">Economic/Social</div>
+            <h2 style="margin: 1rem 0">Universal Basic Income Pilot Program</h2>
+            <p style="color: var(--secondary)">Metropolitan-scale UBI implementation with economic impact assessment</p>
+            <div class="stats">
+                <span><i class="fas fa-clock"></i> 6 days left</span>
+                <span><i class="fas fa-users"></i> 1,892 reviews</span>
+                <span><i class="fas fa-comments"></i> 647 discussions</span>
+            </div>
+            <button class="button" style="margin-top: 1rem" onclick="openReviewModal('economic-social')">
+                <i class="fas fa-pen"></i>
+                Review Policy
+            </button>
+            <canvas id="trendChart-economic-social" class="chart-canvas"></canvas>
+
+        </div>
+    </div>
+
+    <!-- Review Modal -->
+    <div id="reviewModal" class="modal">
+        <div class="modal-content">
+            <button class="close-button" onclick="closeReviewModal()">&times;</button>
+            
+            <!-- Step Indicators -->
+            <div class="steps">
+                <div class="step active" id="step1">
+                    <div class="step-number">1</div>
+                    <span>Policy Summary</span>
+                </div>
+                <div style="width: 100px; height: 2px; background: var(--border); margin: auto 1rem;"></div>
+                <div class="step" id="step2">
+                    <div class="step-number">2</div>
+                    <span>Detailed Review</span>
+                </div>
+            </div>
+
+            <!-- Step 1: Summary -->
+            <div class="step-content active" id="stepContent1">
+                <div class="document-preview">
+                    <a href="https://docs.google.com/document/d/1xlc6SuWtPuQX9FDz7AGRTcJYPC-Ot0ojM6DvNV3xytQ/edit?usp=sharing">View Policy Document</a>
+                    <br>
+                    <br>
+                    <img src="/api/placeholder/800/400" alt="Policy Document" class="preview-image" id="policyImage">
+                    <button class="button" style="width: 100%">
+                        <i class="fas fa-download"></i>
+                        Download Full Document
+                    </button>
+                </div>
+
+                <div class="form-group">
+                    <label>Policy Summary (50-150 words)</label>
+                    <textarea 
+                        id="policySummary"
+                        placeholder="Provide a concise summary of the policy, demonstrating your understanding of its key points..."
+                        onkeyup="countWords(this)"
+                    ></textarea>
+                    <div class="word-count">0/150 words</div>
+                </div>
+
+                <button class="button" style="width: 100%" onclick="nextStep()">
+                    Continue to Detailed Review
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+
+            
+            <!-- Step 2: Detailed Review -->
+            <div class="step-content" id="stepContent2">
+                <div class="form-group">
+                    <h3>Technical Feasibility</h3>
+                    <label>Rate the technical feasibility of this policy</label>
+                    <div class="rating-group">
+                        <button class="rating-btn" onclick="setRating(this, 'technical')">1</button>
+                        <button class="rating-btn" onclick="setRating(this, 'technical')">2</button>
+                        <button class="rating-btn" onclick="setRating(this, 'technical')">3</button>
+                        <button class="rating-btn" onclick="setRating(this, 'technical')">4</button>
+                        <button class="rating-btn" onclick="setRating(this, 'technical')">5</button>
+                    </div>
+                    <textarea 
+                        placeholder="Explain your technical feasibility rating. Consider implementation challenges, resource requirements, and technological readiness..."
+                        required
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <h3>Economic Impact</h3>
+                    <label>Rate the economic impact of this policy</label>
+                    <div class="rating-group">
+                        <button class="rating-btn" onclick="setRating(this, 'economic')">1</button>
+                        <button class="rating-btn" onclick="setRating(this, 'economic')">2</button>
+                        <button class="rating-btn" onclick="setRating(this, 'economic')">3</button>
+                        <button class="rating-btn" onclick="setRating(this, 'economic')">4</button>
+                        <button class="rating-btn" onclick="setRating(this, 'economic')">5</button>
+                    </div>
+                    <textarea 
+                        placeholder="Analyze the economic implications. Consider cost-benefit analysis, resource allocation, and long-term economic sustainability..."
+                        required
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <h3>Social Impact</h3>
+                    <label>Rate the social impact of this policy</label>
+                    <div class="rating-group">
+                        <button class="rating-btn" onclick="setRating(this, 'social')">1</button>
+                        <button class="rating-btn" onclick="setRating(this, 'social')">2</button>
+                        <button class="rating-btn" onclick="setRating(this, 'social')">3</button>
+                        <button class="rating-btn" onclick="setRating(this, 'social')">4</button>
+                        <button class="rating-btn" onclick="setRating(this, 'social')">5</button>
+                    </div>
+                    <textarea 
+                        placeholder="Evaluate the social impacts. Consider effects on different communities, social equity, and public acceptance..."
+                        required
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <h3>Environmental Considerations</h3>
+                    <label>Rate the environmental impact of this policy</label>
+                    <div class="rating-group">
+                        <button class="rating-btn" onclick="setRating(this, 'environmental')">1</button>
+                        <button class="rating-btn" onclick="setRating(this, 'environmental')">2</button>
+                        <button class="rating-btn" onclick="setRating(this, 'environmental')">3</button>
+                        <button class="rating-btn" onclick="setRating(this, 'environmental')">4</button>
+                        <button class="rating-btn" onclick="setRating(this, 'environmental')">5</button>
+                    </div>
+                    <textarea 
+                        placeholder="Assess environmental considerations. Consider both direct and indirect environmental impacts, sustainability, and ecological balance..."
+                        required
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <h3>Implementation Challenges</h3>
+                    <textarea 
+                        placeholder="Identify potential implementation challenges. Consider administrative barriers, resource constraints, and potential resistance..."
+                        required
+                    ></textarea>
+                </div>
+
+                <!-- Replace the previous Final Recommendation section with this -->
+                <div class="form-group">
+                    <h3>Final Recommendation</h3>
+                    <div class="recommendation-buttons">
+                        <button 
+                            class="recommendation-btn" 
+                            onclick="setRecommendation(this, 'accept')"
+                            type="button"
+                        >
+                            <i class="fas fa-check-circle"></i>
+                            Accept
+                        </button>
+                        <button 
+                            class="recommendation-btn" 
+                            onclick="setRecommendation(this, 'reject')"
+                            type="button"
+                        >
+                            <i class="fas fa-times-circle"></i>
+                            Reject
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Replace the previous submit button with this -->
+                <button class="button" style="width: 100%" onclick="confirmSubmission()">
+                    Submit Review
+                    <i class="fas fa-check"></i>
+                </button>
+
+                <!-- Add this confirmation modal -->
+                <div id="confirmationModal" class="modal">
+                    <div class="modal-content" style="max-width: 500px;">
+                        <h3>Confirm Submission</h3>
+                        <p style="margin: 1rem 0">Are you sure you want to submit this review? This action cannot be undone.</p>
+                        <div style="display: flex; gap: 1rem;">
+                            <button class="button" style="flex: 1; background: var(--success)" onclick="submitReview()">
+                                Yes, Submit
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button 
+                                class="button" 
+                                style="flex: 1; background: var(--secondary)" 
+                                onclick="document.getElementById('confirmationModal').style.display='none'"
+                            >
+                                Cancel
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+    <!-- Add this after the review modal -->
+    <div id="trendsModal" class="modal">
+        <div class="modal-content">
+            <button onclick="closeTrendsModal()" class="close-button">×</button>
+            <h2>Policy Voting Trends</h2>
+            <canvas id="trendChart"></canvas>
+        </div>
+    </div>    
+    
+    <script>
+        let currentPolicy = '';
+
+        function openReviewModal(policyType) {
+            currentPolicy = policyType;
+            document.getElementById('reviewModal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+            
+            // Set appropriate image based on policy type
+            const policyImage = document.getElementById('policyImage');
+            if (policyType === 'environmental') {
+                policyImage.src = '/api/placeholder/800/400?text=Water+Conservation+Management';
+            } else {
+                policyImage.src = '/api/placeholder/800/400?text=Economic+Framework+Analysis';
+            }
+        }
+
+        function closeReviewModal() {
+            document.getElementById('reviewModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+            resetForm();
+        }
+
+        function countWords(textarea) {
+            const text = textarea.value;
+            const words = text.trim().split(/\s+/).filter(word => word.length > 0);
+            const wordCount = words.length;
+            
+            document.querySelector('.word-count').textContent = `${wordCount}/150 words`;
+            
+            if (wordCount > 150) {
+                textarea.value = words.slice(0, 150).join(' ');
+            }
+        }
+
+        function nextStep() {
+            const summary = document.getElementById('policySummary').value;
+            const words = summary.trim().split(/\s+/).filter(word => word.length > 0);
+            
+            if (words.length < 50 || words.length > 150) {
+                alert('Please provide a summary between 50 and 150 words.');
+                return;
+            }
+
+            document.getElementById('stepContent1').classList.remove('active');
+            document.getElementById('stepContent2').classList.add('active');
+            document.getElementById('step1').classList.remove('active');
+            document.getElementById('step2').classList.add('active');
+        }
+
+        function resetForm() {
+            document.getElementById('stepContent1').classList.add('active');
+            document.getElementById('stepContent2').classList.remove('active');
+            document.getElementById('step1').classList.add('active');
+            document.getElementById('step2').classList.remove('active');
+            document.getElementById('policySummary').value = '';
+            document.querySelector('.word-count').textContent = '0/150 words';
+        }
+
+        function setRating(button, category) {
+            // Remove selected class from all buttons in the group
+            const buttons = button.parentElement.getElementsByClassName('rating-btn');
+            Array.from(buttons).forEach(btn => btn.classList.remove('selected'));
+            
+            // Add selected class to clicked button
+            button.classList.add('selected');
+        }
+
+        function setRecommendation(button, value) {
+            // Remove selected class from all recommendation buttons
+            const buttons = document.querySelectorAll('.recommendation-btn');
+            buttons.forEach(btn => btn.classList.remove('selected'));
+            
+            // Add selected class to clicked button
+            button.classList.add('selected');
+        }
+        
+        function confirmSubmission() {
+            // Validate that all required fields are filled
+            const requiredFields = document.querySelectorAll('#stepContent2 textarea[required]');
+            for (let field of requiredFields) {
+                if (!field.value.trim()) {
+                    alert('Please fill in all required fields before submitting.');
+                    return;
+                }
+            }
+            
+            // Check if a recommendation is selected
+            const hasRecommendation = document.querySelector('.recommendation-btn.selected');
+            if (!hasRecommendation) {
+                alert('Please select a final recommendation (Accept or Reject) before submitting.');
+                return;
+            }
+            
+            // Show confirmation modal
+            document.getElementById('confirmationModal').style.display = 'block';
+        }
+        
+        function closeTrendsModal() {
+            document.getElementById('trendsModal').style.display = 'none';
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const policies = ['environmental', 'economic', 'infrastructure', 'social', 'tech', 'education', 'economic-social'];
+            policies.forEach(policy => {
+                showTrends(policy, `trendChart-${policy}`);
+            });
+        });
+        
+        function showTrends(policyId, chartId) {
+            const trendCanvas = document.getElementById(chartId);
+            if (!trendCanvas) {
+                console.error('Chart canvas not found for', policyId);
+                return;
+            }
+        
+            const policyData = {
+                environmental: [4.1, 3.8, 4.4, 4.5],
+                economic: [3.9, 4.0, 3.5, 3.8],
+                infrastructure: [4.2, 4.3, 4.1, 4.0],
+                social: [4.5, 4.2, 4.6, 4.7],
+                tech: [4.0, 3.9, 4.2, 4.1],
+                education: [3.8, 3.7, 3.9, 4.0],
+                'economic-social': [2.5, 3.2, 3.9, 4.4] // Example data, adjust as necessary
+            };
+        
+            const data = policyData[policyId] || [0, 0, 0, 0];
+            const ctx = trendCanvas.getContext('2d');
+        
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Technical Feasibility', 'Economic Impact', 'Social Impact', 'Environmental Impact'],
+                    datasets: [{
+                        label: 'Ratings (Out of 5)',
+                        data: data,
+                        backgroundColor: ['#0EA5E9', '#F59E0B', '#10B981', '#6366F1'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 5
+                        }
+                    },
+                    responsive: true
+                }
+            });
+        }
+        
+        // Update the submitReview function
+        function submitReview() {
+            // Close the review modal
+            closeReviewModal();
+        
+            // Enable the "See Trends" button for the current policy
+            const trendButton = document.getElementById(`trendButton-${currentPolicy}`);
+            if (trendButton) trendButton.disabled = false;
+        
+            // Prevent multiple submissions
+            const submitButton = document.querySelector('.button[onclick="confirmSubmission()"]');
+            submitButton.disabled = true;
+        
+            // Show success message
+            alert('Thank you! Your review has been submitted.');
+        
+            // Optionally: Automatically show trends after submission
+            showTrends(currentPolicy);
+        }
+        
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('reviewModal');
+            if (event.target === modal) {
+                closeReviewModal();
+            }
+        }
+    </script>
+</body>
+</html>
